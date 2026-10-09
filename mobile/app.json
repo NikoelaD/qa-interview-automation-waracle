@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Waracle Store",
+    "slug": "waracle-store",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFFFF",
+    "assetBundlePatterns": ["**/*"],
+    "ios": { "supportsTablet": true },
+    "android": {},
+    "web": { "bundler": "metro" }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "waracle-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Waracle Store — a single codebase delivering three linked, independently runnable apps: a REST API with Swagger (Phase 1), a MySQL data layer (Phase 2) and a mobile app (Phase 3), alongside the React web UI.",
+  "workspaces": [
+    "web",
+    "backend",
+    "mobile"
+  ],
+  "scripts": {
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:web": "npm --workspace web run dev",
+    "start:backend": "npm --workspace backend run start",
+    "start:mobile": "npm --workspace mobile run start",
+    "install:all": "npm install",
+    "launch": "concurrently --passthrough-inputs \"npm --workspace backend run dev\" \"npm --workspace mobile run start\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

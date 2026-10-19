@@ -69,9 +69,7 @@ export class ProductsPage {
       (product) => product.name,
     );
 
-    for (const name of productNames) {
-      expect(configuredNames).toContain(name);
-    }
+    expect(productNames.sort()).toEqual(configuredNames.sort());
   }
 
   async verifyNotificationProductAdded(productName: string) {

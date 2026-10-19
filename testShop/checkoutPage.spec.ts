@@ -51,69 +51,78 @@ test.describe("Checkout Page Tests", () => {
     ]);
   });
 
-  test("verify checkout page order summary with discount code", async () => {
-    test.skip(
-      true,
-      "Skipped while the application applies an incorrect coupon discount.",
-    );
+  test.skip(
+    "verify checkout page order summary with discount code",
+    {
+      annotation: {
+        type: "skip",
+        description:
+          "Skipped while the application applies an incorrect coupon discount.",
+      },
+    },
+    async () => {
+      const cap = ProductsConfig.products.product1;
+      const shirt = ProductsConfig.products.product2;
+      const discount = DiscountConfig.discountValid;
 
-    const cap = ProductsConfig.products.product1;
-    const shirt = ProductsConfig.products.product2;
-    const discount = DiscountConfig.discountValid;
+      await productsPage.addProductToCartByName(cap.name);
+      await productsPage.addProductToCartByName(cap.name);
+      await productsPage.addProductToCartByName(shirt.name);
 
-    await productsPage.addProductToCartByName(cap.name);
-    await productsPage.addProductToCartByName(cap.name);
-    await productsPage.addProductToCartByName(shirt.name);
+      await cartPage.navigateToCartPage();
+      await cartPage.addDiscountCode(discount.code);
+      await checkoutPage.proceedToCheckout();
 
-    await cartPage.navigateToCartPage();
-    await cartPage.addDiscountCode(discount.code);
-    await checkoutPage.proceedToCheckout();
+      await checkoutPage.verifyCheckoutPageURL();
+      await checkoutPage.verifyOrderSummary(
+        [
+          { name: cap.name, price: cap.price },
+          { name: shirt.name, price: shirt.price },
+        ],
+        discount.code,
+        discount.discountPercentage,
+        discount.shippingCost,
+      );
+    },
+  );
 
-    await checkoutPage.verifyCheckoutPageURL();
-    await checkoutPage.verifyOrderSummary(
-      [
-        { name: cap.name, price: cap.price },
-        { name: shirt.name, price: shirt.price },
-      ],
-      discount.code,
-      discount.discountPercentage,
-      discount.shippingCost,
-    );
-  });
+  test.skip(
+    "AC-6 order confirmation shows coupon, discount, and final total",
+    {
+      annotation: {
+        type: "skip",
+        description:
+          "Known application bug: order confirmation omits coupon and discount details.",
+      },
+    },
+    async () => {
+      const discountAmount = Math.round(
+        (ProductsConfig.products.product1.price *
+          DiscountConfig.discountValid.discountPercentage) /
+          100,
+      );
+      const total =
+        ProductsConfig.products.product1.price -
+        discountAmount +
+        DiscountConfig.discountValid.shippingCost;
 
-  test("AC-6 order confirmation shows coupon, discount, and final total", async ({
-    page,
-  }) => {
-    test.skip(
-      true,
-      "Known application bug: order confirmation omits coupon and discount details.",
-    );
-    const discountAmount = Math.round(
-      (ProductsConfig.products.product1.price *
-        DiscountConfig.discountValid.discountPercentage) /
-        100,
-    );
-    const total =
-      ProductsConfig.products.product1.price -
-      discountAmount +
-      DiscountConfig.discountValid.shippingCost;
+      await productsPage.addProductToCartByName(
+        ProductsConfig.products.product1.name,
+      );
+      await cartPage.navigateToCartPage();
+      await cartPage.addDiscountCode(DiscountConfig.discountValid.code);
+      await checkoutPage.proceedToCheckout();
+      await checkoutPage.fillShippingInfo();
+      await checkoutPage.fillPaymentInfo();
+      await checkoutPage.paymentButton.click();
 
-    await productsPage.addProductToCartByName(
-      ProductsConfig.products.product1.name,
-    );
-    await cartPage.navigateToCartPage();
-    await cartPage.addDiscountCode(DiscountConfig.discountValid.code);
-    await checkoutPage.proceedToCheckout();
-    await checkoutPage.fillShippingInfo();
-    await checkoutPage.fillPaymentInfo();
-    await checkoutPage.paymentButton.click();
-
-    await checkoutPage.verifyOrderConfirmation(
-      DiscountConfig.discountValid.code,
-      discountAmount,
-      total,
-    );
-  });
+      await checkoutPage.verifyOrderConfirmation(
+        DiscountConfig.discountValid.code,
+        discountAmount,
+        total,
+      );
+    },
+  );
 
   test("verify order confirmation email, date, items, and total", async ({
     page,

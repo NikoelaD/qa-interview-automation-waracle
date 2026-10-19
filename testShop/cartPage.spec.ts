@@ -36,22 +36,28 @@ test.describe("Checkout Page Tests", () => {
     await cartPage.verifyCouponApplied(DiscountConfig.discountValid.code);
   });
 
-  test("AC-2 WARACLE25 reduces the subtotal by 25%", async ({ page }) => {
-    test.skip(
-      true,
-      "Known application bug: WARACLE25 currently applies an incorrect discount.",
-    );
-    await productsPage.navigateShopNow();
-    await productsPage.addProductToCartByName(
-      ProductsConfig.products.product1.name,
-    );
-    await cartPage.navigateToCartPage();
-    await cartPage.addDiscountCode(DiscountConfig.discountValid.code);
-    await cartPage.verifyDiscountCalculation(
-      ProductsConfig.products.product1.price,
-      DiscountConfig.discountValid.code,
-    );
-  });
+  test.skip(
+    "AC-2 WARACLE25 reduces the subtotal by 25%",
+    {
+      annotation: {
+        type: "skip",
+        description:
+          "Known application bug: WARACLE25 currently applies an incorrect discount.",
+      },
+    },
+    async ({ page }) => {
+      await productsPage.navigateShopNow();
+      await productsPage.addProductToCartByName(
+        ProductsConfig.products.product1.name,
+      );
+      await cartPage.navigateToCartPage();
+      await cartPage.addDiscountCode(DiscountConfig.discountValid.code);
+      await cartPage.verifyDiscountCalculation(
+        ProductsConfig.products.product1.price,
+        DiscountConfig.discountValid.code,
+      );
+    },
+  );
 
   test("AC-3 and AC-4 non-empty basket has £5 shipping and correct total", async ({
     page,
@@ -68,40 +74,48 @@ test.describe("Checkout Page Tests", () => {
     );
   });
 
-  test("AC-5 invalid coupon shows an error and applies no discount", async ({
-    page,
-  }) => {
-    test.skip(
-      true,
-      "Known application bug: invalid coupons do not show a clear error message.",
-    );
-    await productsPage.navigateShopNow();
-    await productsPage.addProductToCartByName(
-      ProductsConfig.products.product1.name,
-    );
-    await cartPage.navigateToCartPage();
-    await cartPage.addDiscountCode(DiscountConfig.discountInvalid.code);
+  test.skip(
+    "AC-5 invalid coupon shows an error and applies no discount",
+    {
+      annotation: {
+        type: "skip",
+        description:
+          "Known application bug: invalid coupons do not show a clear error message.",
+      },
+    },
+    async ({ page }) => {
+      await productsPage.navigateShopNow();
+      await productsPage.addProductToCartByName(
+        ProductsConfig.products.product1.name,
+      );
+      await cartPage.navigateToCartPage();
+      await cartPage.addDiscountCode(DiscountConfig.discountInvalid.code);
 
-    await expect(page.getByText(/invalid coupon/i)).toBeVisible();
-    await expect(cartPage.orderSummary.getByText(/^Coupon \(/)).toHaveCount(0);
-    await cartPage.verifyOrderTotals(ProductsConfig.products.product1.price, 0);
-  });
+      await expect(page.getByText(/invalid coupon/i)).toBeVisible();
+      await expect(cartPage.orderSummary.getByText(/^Coupon \(/)).toHaveCount(0);
+      await cartPage.verifyOrderTotals(ProductsConfig.products.product1.price, 0);
+    },
+  );
 
-  test("AC-5 empty coupon shows a clear message and applies no discount", async ({
-    page,
-  }) => {
-    test.skip(
-      true,
-      "Known application bug: empty coupons do not show a clear validation message.",
-    );
-    await productsPage.navigateShopNow();
-    await productsPage.addProductToCartByName(
-      ProductsConfig.products.product1.name,
-    );
-    await cartPage.navigateToCartPage();
-    await cartPage.addDiscountCode(DiscountConfig.discountEmpty.code);
+  test.skip(
+    "AC-5 empty coupon shows a clear message and applies no discount",
+    {
+      annotation: {
+        type: "skip",
+        description:
+          "Known application bug: empty coupons do not show a clear validation message.",
+      },
+    },
+    async () => {
+      await productsPage.navigateShopNow();
+      await productsPage.addProductToCartByName(
+        ProductsConfig.products.product1.name,
+      );
+      await cartPage.navigateToCartPage();
+      await cartPage.addDiscountCode(DiscountConfig.discountEmpty.code);
 
-    await cartPage.verifyInvalidDiscountMessage();
-    await cartPage.verifyOrderTotals(ProductsConfig.products.product1.price, 0);
-  });
+      await cartPage.verifyInvalidDiscountMessage();
+      await cartPage.verifyOrderTotals(ProductsConfig.products.product1.price, 0);
+    },
+  );
 });
